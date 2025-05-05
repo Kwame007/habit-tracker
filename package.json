@@ -1,0 +1,21 @@
+{
+  "name": "habit-tracker",
+  "version": "1.0.0",
+  "description": "A habit tracking webapp!",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [
+    "Habit",
+    "track",
+    "your",
+    "habit"
+  ],
+  "author": "Clement",
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "prettier": "^3.5.3"
+  }
+}
