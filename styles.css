@@ -341,6 +341,7 @@ button {
               }
 
               .main__content-habit-name {
+                text-transform: capitalize;
                 line-clamp: 1;
                 width: 180px;
                 font-weight: 500;
@@ -356,6 +357,9 @@ button {
                 gap: 0.5rem;
                 margin-top: 0.4rem;
                 align-items: center;
+                font-weight: 400;
+                text-transform: capitalize;
+                font-size: 10px;
 
                 .main__content-habit-tag {
                   display: flex;
@@ -492,7 +496,6 @@ button {
 
 /* modal */
 .habit-modal {
-  /* position: relative; */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -551,6 +554,10 @@ button {
       .habit-modal__form-group {
         display: flex;
         flex-direction: column;
+
+        .habit-modal__time-btn--active {
+          border-color: var(--color-purple-500);
+        }
       }
 
       .habit-modal__label {
@@ -573,7 +580,7 @@ button {
 
         &:focus {
           outline: none;
-          border-color: #8b5cf6;
+          border-color: var(--color-purple-500);
           box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.4);
         }
       }
@@ -586,6 +593,10 @@ button {
 
       .habit-modal__category-grid {
         grid-template-columns: repeat(3, 1fr);
+
+        .habit-modal__category-btn--active {
+          border-color: var(--color-purple-500);
+        }
       }
 
       .habit-modal__time-grid {
