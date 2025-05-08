@@ -53,7 +53,7 @@ const categoryIcons = {
       </svg>
     `,
     color: '#8b5cf6',
-    accentColor: '#c4b5fd',
+    accentColor: '#ede9fe',
   },
   creativity: {
     icon: `
@@ -143,23 +143,22 @@ const renderHabits = function (habits) {
           </div>
         </div>
       </div>
-      <button class="main__content-habit-checkbox" data-index="${index}">
-        ${icon}
-      </button>
+      <div class="main__content-habit-actions" data-index="${index}" >
+        <button class="main__content-habit-checkbox" data-index="${index}">
+          ${icon}
+        </button>
+        <button class="main__content-habit-actions-btn" data-index="${index}">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" style="color: #9ca3af" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-ellipsis-vertical-icon lucide-ellipsis-vertical main__content-habit-actions-icon"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+        </button>
+
+        <div class="main__content-habit-actions-menu hidden">
+          <button class="main__button main__content-habit-actions-menu-item edit" data-action="edit" disabled>Edit</button>
+          <button class="main__button main__content-habit-actions-menu-item delete" data-action="delete">Delete</button>
+        </div>
+      </div>
     `
 
     habitsContainer.appendChild(habitDiv)
-  })
-
-  // Reattach checkbox event listeners
-  document.querySelectorAll('.main__content-habit-checkbox').forEach((btn) => {
-    btn.addEventListener('click', function () {
-      const index = btn.dataset.index
-      if (typeof habits[index].toggleHabit === 'function') {
-        habits[index].toggleHabit()
-        renderHabits(habits)
-      }
-    })
   })
 }
 

@@ -1,12 +1,132 @@
 import renderHabits from './ui.js'
 import storeHabitsInLocalStorage from './storage.js'
 
-// get the form inputs (moved up to avoid undefined usage)
 const form = document.querySelector('.habit-modal__form')
 const habitName = document.querySelector('.habit-modal__input')
 const habitCategory = document.querySelectorAll('.habit-modal__category-btn')
 const habitTags = document.querySelectorAll('.habit-modal__time-btn')
 const emptyText = document.querySelector('.main__content-habits-empty')
+const categoryLinks = document.querySelectorAll(
+  '.main__nav-categories .main__nav-link',
+)
+const dashboardLink = document.getElementById('dashboard')
+
+document.addEventListener('click', (e) => {
+  const target = e.target
+
+  // 1. Handle habit checkbox toggle
+  const checkBoxBtn = target.closest('.main__content-habit-checkbox')
+  if (checkBoxBtn) {
+    const index = checkBoxBtn.dataset.index
+    if (typeof habits[index].toggleHabit === 'function') {
+      habits[index].toggleHabit()
+
+      // update local storage
+      storeHabitsInLocalStorage(habits)
+      renderHabits(habits)
+    }
+    return
+  }
+
+  // 2. Handle "..." actions button click (toggle menu)
+  const actionsBtn = target.closest('.main__content-habit-actions-btn')
+  if (actionsBtn) {
+    const index = actionsBtn.dataset.index
+
+    // Close all open menus
+    document
+      .querySelectorAll('.main__content-habit-actions-menu')
+      .forEach((menu) => menu.classList.add('hidden'))
+
+    // Toggle current menu
+    const parent = actionsBtn.closest('.main__content-habit-actions')
+    const menu = parent.querySelector('.main__content-habit-actions-menu')
+    if (menu) {
+      menu.classList.toggle('hidden')
+    }
+
+    return
+  }
+
+  // 3. Handle menu item clicks (edit/delete)
+  const menuItem = target.closest('.main__content-habit-actions-menu-item')
+  if (menuItem) {
+    const parent = menuItem.closest('.main__content-habit-actions')
+    const index = parent.dataset.index
+    const action = menuItem.dataset.action // "edit" or "delete"
+
+    if (action === 'edit') {
+      // TODO: handle edit
+      // handleEdit(index)
+    } else if (action === 'delete') {
+      handleDelete(index)
+    }
+
+    // Hide menu after action
+    const menu = parent.querySelector('.main__content-habit-actions-menu')
+    if (menu) {
+      menu.classList.add('hidden')
+    }
+
+    return
+  }
+
+  // 4. Clicked elsewhere: close all menus
+  document
+    .querySelectorAll('.main__content-habit-actions-menu')
+    .forEach((menu) => menu.classList.add('hidden'))
+})
+
+// function handleEdit(index) {
+//   const habit = habits[index]
+//   console.log('Edit habit:', habit)
+
+//   // Populate habit name
+//   habitName.value = habit.name
+
+//   // Populate category
+//   habitCategory.forEach((btn) =>
+//     btn.classList.remove('habit-modal__category-btn--active'),
+//   )
+//   habitCategory.forEach((btn) => {
+//     if (btn.dataset.category === habit.category) {
+//       btn.classList.add('habit-modal__category-btn--active')
+//     }
+//   })
+
+//   // Populate time of day
+//   // timeButtons.forEach((btn) =>
+//   //   btn.classList.remove('habit-modal__time-btn--active'),
+//   // )
+//   // timeButtons.forEach((btn) => {
+//   //   if (btn.dataset.time === habit.time) {
+//   //     btn.classList.add('habit-modal__time-btn--active')
+//   //   }
+//   // })
+
+//   // Populate tag
+//   habitTags.forEach((btn) =>
+//     btn.classList.remove('habit-modal__tag-btn--active'),
+//   )
+//   habitTags.forEach((btn) => {
+//     if (btn.dataset.tag === habit.tag) {
+//       btn.classList.add('habit-modal__tag-btn--active')
+//     }
+//   })
+
+//   // Track which habit is being edited
+//   form.dataset.index = index
+
+//   // Show modal
+//   modal.classList.remove('hidden')
+// }
+
+function handleDelete(index) {
+  habits.splice(index, 1)
+
+  storeHabitsInLocalStorage(habits)
+  renderHabits(habits)
+}
 
 // modal
 const modal = document.querySelector('.habit-modal')
@@ -14,6 +134,33 @@ const overlay = document.querySelector('.habit-modal__overlay')
 const openModalBtns = document.querySelectorAll('.modal-open')
 const closeModalBtn = document.querySelector('.habit-modal__close-btn')
 const cancelModalBtn = document.querySelector('.habit-modal__cancel-btn')
+
+// loop through categories and add click event listener
+function addCategoryClickEventListeners() {
+  categoryLinks.forEach((link) => {
+    link.addEventListener('click', function () {
+      categoryLinks.forEach((link) =>
+        link.classList.remove('main__nav-link--active'),
+      )
+      link.classList.add('main__nav-link--active')
+
+      // filter habits
+      const filteredHabits = habits.filter(
+        (habit) => habit.category === link.dataset.category,
+      )
+      console.log(link.dataset.category)
+      console.log(filteredHabits)
+
+      if (filteredHabits.length === 0) {
+        emptyText.classList.remove('hidden')
+      } else {
+        emptyText.classList.add('hidden')
+      }
+      renderHabits(filteredHabits)
+    })
+  })
+}
+addCategoryClickEventListeners()
 
 // close modal function
 const closeModal = function () {
@@ -80,10 +227,13 @@ class Habit {
 // Handle category selection
 habitCategory.forEach(function (btn) {
   btn.addEventListener('click', function () {
-    habitCategory.forEach((b) =>
-      b.classList.remove('habit-modal__category-btn--active'),
-    )
+    habitCategory.forEach((b) => {
+      b.classList.remove('habit-modal__category-btn--active')
+      b.setAttribute('aria-pressed', 'false')
+    })
+
     btn.classList.add('habit-modal__category-btn--active')
+    btn.setAttribute('aria-pressed', 'true')
   })
 })
 
@@ -115,6 +265,22 @@ if (habits.length === 0) {
 // Initial render
 renderHabits(habits)
 
+// remove active class from category links
+dashboardLink.addEventListener('click', () => {
+  categoryLinks.forEach((link) => {
+    link.classList.remove('main__nav-link--active')
+  })
+
+  // show all habits
+  if (habits.length === 0) {
+    emptyText.classList.remove('hidden')
+  } else {
+    emptyText.classList.add('hidden')
+  }
+
+  renderHabits(habits)
+})
+
 // Handle form submission
 form.addEventListener('submit', function (e) {
   e.preventDefault()
@@ -126,8 +292,9 @@ form.addEventListener('submit', function (e) {
   )
   const tagBtn = document.querySelector('.habit-modal__time-btn--active')
 
-  const category = categoryBtn ? categoryBtn.value : 'general'
-  const tag = tagBtn ? tagBtn.value : 'anytime'
+  const category = categoryBtn ? categoryBtn.dataset.category : 'general'
+
+  const tag = tagBtn ? tagBtn.dataset.tag : 'anytime'
 
   const newHabit = new Habit(name, category, tag)
   habits.push(newHabit)
@@ -137,6 +304,7 @@ form.addEventListener('submit', function (e) {
     emptyText.classList.add('hidden')
   }
 
+  addCategoryClickEventListeners()
   renderHabits(habits)
   storeHabitsInLocalStorage(habits)
   closeModal()
