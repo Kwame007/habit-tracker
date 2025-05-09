@@ -1,5 +1,6 @@
 import renderHabits from './ui.js'
 import storeHabitsInLocalStorage from './storage.js'
+import Habit from './habit.js'
 
 // DOM Elements
 const form = document.querySelector('.habit-modal__form')
@@ -16,21 +17,7 @@ const overlay = document.querySelector('.habit-modal__overlay')
 const openModalBtns = document.querySelectorAll('.modal-open')
 const closeModalBtn = document.querySelector('.habit-modal__close-btn')
 const cancelModalBtn = document.querySelector('.habit-modal__cancel-btn')
-
-// Habit class
-class Habit {
-  constructor(name, category, tag) {
-    this.name = name
-    this.category = category
-    this.tag = tag
-    this.completed = false
-    this.createdAt = new Date()
-  }
-
-  toggleHabit() {
-    this.completed = !this.completed
-  }
-}
+const currentDate = document.querySelector('.header__title-date')
 
 let habits = []
 
@@ -49,6 +36,17 @@ function handleDelete(index) {
   renderHabits(habits)
   updateEmptyState()
 }
+
+const getCurrentDate = () => {
+  const date = new Date()
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+  })
+  return formatter.format(date)
+}
+currentDate.textContent = getCurrentDate()
 
 // Modal functions
 function closeModal() {
@@ -99,7 +97,18 @@ document.addEventListener('click', (e) => {
     if (typeof habits[index].toggleHabit === 'function') {
       habits[index].toggleHabit()
       storeHabitsInLocalStorage(habits)
-      renderHabits(habits)
+
+      // Get current category filter
+      const activeCategory = document.querySelector('.main__nav-link--active')
+      const filteredHabits = activeCategory
+        ? habits.filter(
+            (habit) => habit.category === activeCategory.dataset.category,
+          )
+        : habits
+
+      // Update UI with filtered habits
+      renderHabits(filteredHabits)
+      updateEmptyState()
     }
     return
   }
@@ -168,7 +177,8 @@ function setupCategoryFilter() {
 // Initialize habits from localStorage
 const storedHabits = JSON.parse(localStorage.getItem('habits'))
 if (storedHabits) {
-  habits = storedHabits.map((h) => new Habit(h.name, h.category, h.tag))
+  habits = storedHabits.map((h) => Habit.fromJSON(h))
+  storeHabitsInLocalStorage(habits)
 }
 
 // Initial setup
@@ -203,6 +213,7 @@ dashboardLink.addEventListener('click', () => {
   }
 
   renderHabits(habits)
+  storeHabitsInLocalStorage(habits)
 })
 
 // Form submission

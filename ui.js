@@ -1,3 +1,5 @@
+import createHabitTracker from './habitTracker.js'
+
 const categoryIcons = {
   health: {
     icon: `
@@ -91,8 +93,21 @@ const categoryIcons = {
 
 const renderHabits = function (habits) {
   const habitsContainer = document.querySelector('.main__content-habits-list')
+  const habitStreakDays = document.querySelector('.streak-days')
+  const totalCompletedHabits = document.querySelector('.completed-habits')
+  const totalHabits = document.querySelector('.total-habits')
+
+  // Clear container and update stats
   habitsContainer.innerHTML = ''
 
+  // Update stats with current date
+  const today = new Date()
+  habitStreakDays.textContent = createHabitTracker(habits).getStreak()
+  totalCompletedHabits.textContent =
+    createHabitTracker(habits).getTotalCompleted()
+  totalHabits.textContent = createHabitTracker(habits).getTotalHabits()
+
+  // Render each habit
   habits.forEach((habit, index) => {
     const categoryKey = habit.category?.toLowerCase()
     const category = categoryIcons[categoryKey] || categoryIcons.general
