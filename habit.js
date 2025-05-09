@@ -1,4 +1,4 @@
-export class Habit {
+class Habit {
   constructor(name, category, tag) {
     if (!name || typeof name !== 'string') {
       throw new Error('Habit name is required and must be a string')
@@ -15,10 +15,20 @@ export class Habit {
     this.tag = tag
     this.completed = false
     this.createdAt = new Date()
+    this.completionHistory = [] // Array of dates when the habit was completed
   }
 
   toggleHabit() {
     this.completed = !this.completed
+    if (this.completed) {
+      // Add today's date to completion history when marking as completed
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+      const dateStr = today.toISOString().split('T')[0]
+      if (!this.completionHistory.includes(dateStr)) {
+        this.completionHistory.push(dateStr)
+      }
+    }
   }
 
   toJSON() {
@@ -28,6 +38,7 @@ export class Habit {
       tag: this.tag,
       completed: this.completed,
       createdAt: this.createdAt,
+      completionHistory: this.completionHistory,
     }
   }
 
@@ -35,6 +46,9 @@ export class Habit {
     const habit = new Habit(json.name, json.category, json.tag)
     habit.completed = json.completed
     habit.createdAt = new Date(json.createdAt)
+    habit.completionHistory = json.completionHistory || []
     return habit
   }
 }
+
+export default Habit
