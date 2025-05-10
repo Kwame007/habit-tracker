@@ -16,6 +16,7 @@ class Habit {
     this.completed = false
     this.createdAt = new Date()
     this.completionHistory = [] // Array of dates when the habit was completed
+    this.completedHabits = [] // Array of dates when the habit was completed
   }
 
   toggleHabit() {
@@ -25,10 +26,23 @@ class Habit {
       const today = new Date()
       today.setHours(0, 0, 0, 0)
       const dateStr = today.toISOString().split('T')[0]
-      if (!this.completionHistory.includes(dateStr)) {
-        this.completionHistory.push(dateStr)
+
+      if (this.completed) {
+        this.completedHabits.push(dateStr)
       }
+
+      // if (!this.completionHistory.includes(dateStr)) {
+      //   this.completionHistory.push(dateStr)
+      // }
+
+      console.log(today)
+      console.log(dateStr)
+    } else {
+      this.completedHabits.pop()
     }
+
+    console.log(this.completionHistory)
+    console.log(this.completedHabits)
   }
 
   toJSON() {
