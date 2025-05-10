@@ -92,6 +92,7 @@ document.addEventListener('click', (e) => {
 
   // Handle habit checkbox toggle
   const checkBoxBtn = target.closest('.main__content-habit-checkbox')
+
   if (checkBoxBtn) {
     const index = checkBoxBtn.dataset.index
     if (typeof habits[index].toggleHabit === 'function') {

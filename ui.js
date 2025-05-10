@@ -100,8 +100,6 @@ const renderHabits = function (habits) {
   // Clear container and update stats
   habitsContainer.innerHTML = ''
 
-  // Update stats with current date
-  const today = new Date()
   habitStreakDays.textContent = createHabitTracker(habits).getStreak()
   totalCompletedHabits.textContent =
     createHabitTracker(habits).getTotalCompleted()

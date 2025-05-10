@@ -1,8 +1,9 @@
 {
-  "name": "habit-tracker",
+  "name": "habit-track",
   "version": "1.0.0",
   "description": "A habit tracking webapp!",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "jest"
   },
@@ -15,7 +16,11 @@
   "author": "Clement",
   "license": "MIT",
   "devDependencies": {
+    "@babel/core": "^7.27.1",
+    "@babel/preset-env": "^7.27.2",
+    "babel-jest": "^29.7.0",
     "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
     "prettier": "^3.5.3"
   }
 }
